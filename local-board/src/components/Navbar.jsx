@@ -18,7 +18,17 @@ export default function Navbar() {
         border-b border-white/10
       "
       >
-        <h1 className="text-sm font-semibold text-[#e6e8eb] tracking-wide">
+        <h1
+          className="
+            text-base font-semibold tracking-wide
+            bg-linear-to-r
+            from-white
+            via-[#c9fa7c]
+            to-[#2de668]
+            bg-clip-text
+            text-transparent
+          "
+        >
           Local Board
         </h1>
         <div className="flex items-center gap-3">
@@ -33,7 +43,7 @@ export default function Navbar() {
           <button
             onClick={handleLoginClick}
             className="
-              text-sm font-medium
+              font-medium
               px-2 py-1
               rounded-md
               hover:text-[#7CFF6B]
