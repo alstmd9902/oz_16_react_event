@@ -37,7 +37,7 @@ export default function Signup() {
             <button
               type="submit"
               className="w-full rounded-md bg-green-700 py-2 font-semibold 
-              transition hover:bg-green-600 text-amber-50"
+              transition  hover:bg-green-600 hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] text-amber-50"
             >
               회원가입
             </button>
@@ -47,7 +47,7 @@ export default function Signup() {
             이미 계정이 있으신가요?
             <span
               onClick={() => navigate("/login")}
-              className="cursor-pointer text-white underline"
+              className="pl-1.5 cursor-pointer text-white underline transition hover:text-green-400"
             >
               로그인
             </span>
