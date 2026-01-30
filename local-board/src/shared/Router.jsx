@@ -1,0 +1,28 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import Main from "../components/Main";
+import Login from "../pages/auth/Login";
+import Signup from "../pages/auth/Signup";
+import PostCreate from "../pages/post/PostCreate";
+import PostDetail from "../pages/post/PostDetail";
+import Layout from "./Layout";
+
+function Routers() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        { index: true, element: <Main /> },
+        { path: "post/create", element: <PostCreate /> }, // 게시글 생성
+        { path: "post/:id", element: <PostDetail /> } // 게시글 상세
+      ]
+    },
+    { path: "login", element: <Login /> },
+    { path: "signup", element: <Signup /> }
+  ]);
+
+  return <RouterProvider router={router} />;
+}
+
+export default Routers;
