@@ -1,5 +1,5 @@
-import ReactDOM from "react-dom/client";
-import Routers from "./shared/Router";
+import { createRoot } from "react-dom/client";
 import "./index.css";
+import Routers from "./shared/Router";
 
-ReactDOM.createRoot(document.getElementById("root")).render(<Routers />);
+createRoot(document.getElementById("root")).render(<Routers />);

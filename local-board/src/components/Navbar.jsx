@@ -12,7 +12,7 @@ export default function Navbar() {
         className="
         fixed top-0 left-0 z-10 w-full h-14
         flex items-center justify-between
-        px-6
+        px-12
         bg-[rgba(28,28,28,0.31)]
         backdrop-blur-md
         border-b border-white/10

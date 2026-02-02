@@ -1,5 +1,3 @@
-import { CalendarMinus2 } from "lucide-react";
-
 export default function Main() {
   return (
     <>

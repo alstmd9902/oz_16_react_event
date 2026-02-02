@@ -45,12 +45,12 @@ export default function Signup() {
 
           <p className="mt-6 text-center text-sm text-neutral-400">
             이미 계정이 있으신가요?
-            <span
+            <button
               onClick={() => navigate("/login")}
               className="pl-1.5 cursor-pointer text-white underline transition hover:text-green-400"
             >
               로그인
-            </span>
+            </button>
           </p>
         </div>
       </div>
