@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import InputField from "../../components/InputField";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,8 +13,7 @@ export default function Login() {
           className="
             cursor-pointer text-center text-3xl font-bold tracking-wider
             bg-linear-to-r from-white via-[#d6f5a2] to-[#2de668]
-            bg-clip-text text-transparent
-          "
+            bg-clip-text text-transparent"
         >
           Local Board
         </h2>
@@ -27,22 +27,24 @@ export default function Login() {
         </p>
 
         <form className="space-y-4">
-          <input
+          <InputField
+            label="email"
+            hideLabel
+            name="email"
             type="email"
             placeholder="이메일"
-            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-4 py-2 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
           />
 
-          <input
+          <InputField
+            label="password"
             type="password"
             placeholder="비밀번호"
-            className="w-full rounded-md border border-neutral-700 bg-neutral-800 px-4 py-2 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+            hideLabel
           />
 
           <button
             type="submit"
-            className="w-full rounded-md bg-green-600 py-2 font-semibold text-amber-50 transition
-             hover:bg-green-500 hover:shadow-[0_0_12px_rgba(34,197,94,0.6)]"
+            className="w-full rounded-md bg-green-600 py-2 font-semibold text-amber-50 transition hover:bg-green-500 hover:shadow-[0_0_12px_rgba(34,197,94,0.6)]"
           >
             로그인
           </button>
@@ -50,12 +52,12 @@ export default function Login() {
 
         <div className="mt-6 text-center text-sm text-neutral-400">
           계정이 없으신가요?
-          <span
+          <button
             onClick={() => navigate("/signup")}
             className="pl-1.5 cursor-pointer text-white underline transition hover:text-green-400"
           >
             회원가입
-          </span>
+          </button>
         </div>
       </div>
     </div>
