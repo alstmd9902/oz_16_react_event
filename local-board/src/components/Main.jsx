@@ -47,7 +47,8 @@ const data = [
 // 스프레드(...)로 복사한 새 배열을 만든 뒤 정렬한다
 // 날짜는 문자열이므로 dayjs로 날짜 객체로 바꾸고
 // valueOf()로 숫자(타임스탬프)로 변환해서 비교한다
-const sortedData = [...data].sort(
+// toSorted 불변성을 지켜줌 ... 스프레드 안써도됨
+const sortedData = data.toSorted(
   (a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf()
 );
 
