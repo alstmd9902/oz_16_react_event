@@ -16,5 +16,23 @@ export default function usePosts() {
     setPosts((prev) => [...prev, res.data]);
   };
 
-  return { posts, addPost }; // 필요한 값 리턴
+  const updatePost = async (id, formData) => {
+    const res = await axios.put(`http://localhost:3000/posts/${id}`, formData);
+
+    setPosts((prev) => prev.map((post) => (post.id === id ? res.data : post)));
+    return res.data; // 업데이트 후 최신 데이터를 반환하여 호출 측에서 활용 가능하도록 함
+  };
+
+  const deletePost = async (id) => {
+    await axios.delete(`http://localhost:3000/posts/${id}`);
+
+    setPosts((prev) => prev.filter((post) => post.id !== id));
+  };
+
+  return {
+    posts, // 서버 기준 진짜 데이터
+    addPost, // 생성
+    updatePost, // 수정
+    deletePost // 삭제
+  };
 }
