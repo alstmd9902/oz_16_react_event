@@ -1,12 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link } from "react-router-dom";
-//import dayjs from "dayjs";
-// //0분전, 1달전, 1년전 이렇게 상대 시간을 표현하는 플러그인
-// import relativeTime from "dayjs/plugin/relativeTime";
-// dayjs.extend(relativeTime); // 플러그인 등록
-// dayjs.locale("ko"); // 언어 등록
-
+import { useImageUploader } from "../../hooks/useImageUploader";
 /**
  * 게시글 작성 페이지
  * - 이미지 업로드 + 제목/내용 입력
@@ -14,48 +9,26 @@ import { Link } from "react-router-dom";
  * - 초과 시 경고 + 업로드 차단
  */
 export default function PostCreate({ addPost }) {
-  const MAX_IMAGES = 5; // 이미지 최대 개수 제한
+  const { images, addImages, removeImage, resetImages, MAX_IMAGES } =
+    useImageUploader();
 
-  const [images, setImages] = useState([]); // [{ file, preview }]
   const [title, setTitle] = useState(""); // 게시글 제목
   const [content, setContent] = useState(""); // 게시글 내용
 
   // 제목 또는 내용이 하나라도 없다면 버튼 비활성화 해야함 false ,true 로 비교
   const isValid = Boolean(title.trim() && content.trim());
 
-  const handleClick = () => {
+  const handleClick = async () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("contents", content);
     images.forEach(({ file }) => formData.append("images", file));
-    addPost(formData);
-    setTitle("");
-    setContent("");
-    setImages([]);
-  };
 
-  // 이미지 드롭/선택 시 실행
-  const onDrop = (acceptedFiles) => {
-    if (!acceptedFiles || acceptedFiles.length === 0) return; // 파일 없으면 종료
+    await addPost(formData); // 저장 완료 대기
 
-    setImages((prev) => {
-      const remain = MAX_IMAGES - prev.length; // 남은 이미지 슬롯 계산
-
-      // 최대 개수 초과 → 경고만 띄우고 상태 변경 X
-      if (acceptedFiles.length > remain) {
-        alert(`이미지는 최대 ${MAX_IMAGES}장까지 첨부할 수 있어요.`);
-        return prev; // return 안 하면 일부 파일이 들어가버림 → 아예 추가 막기
-      }
-
-      // 선택한 파일을 미리보기 가능한 형태로 변환
-      const mapped = acceptedFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file) // 이미지 미리보기용 URL
-      }));
-
-      // 기존 이미지 + 새 이미지 합치기
-      return [...prev, ...mapped];
-    });
+    resetImages(); // 이미지 초기화
+    setTitle(""); // 제목 초기화
+    setContent(""); // 내용 초기화
   };
 
   // react-dropzone 단계에서 이미 컷된 경우 내용
@@ -67,7 +40,7 @@ export default function PostCreate({ addPost }) {
 
   // dropzone 설정 (입력 처리 + 1차 필터)
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
-    onDrop, // 정상 케이스
+    onDrop: addImages, // 정상 케이스
     onDropRejected, // 초과 케이스
     maxFiles: MAX_IMAGES, // 1차 개수 제한
     accept: {
@@ -75,22 +48,6 @@ export default function PostCreate({ addPost }) {
     },
     disabled: images.length >= MAX_IMAGES
   });
-
-  // 이미지 하나 삭제
-  const handleRemoveImage = (index) => {
-    setImages((prev) => {
-      const target = prev[index];
-      if (target) URL.revokeObjectURL(target.preview); // 메모리 해제
-      return prev.filter((_, i) => i !== index); // 해당 index 제거
-    });
-  };
-
-  // 컴포넌트 종료 시 미리보기 URL 정리
-  useEffect(() => {
-    return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.preview));
-    };
-  }, [images]);
 
   return (
     <div className="flex justify-center px-4">
@@ -140,7 +97,7 @@ export default function PostCreate({ addPost }) {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleRemoveImage(idx);
+                      removeImage(idx);
                     }}
                     className="absolute top-1 right-1 hidden h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white text-sm group-hover:flex"
                   >
