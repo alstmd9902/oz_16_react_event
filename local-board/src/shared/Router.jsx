@@ -14,12 +14,26 @@ function Routers() {
       path: "/",
       element: <Layout />,
       children: [
-        { index: true, element: <Main posts={postsState.posts} /> },
+        {
+          index: true,
+          element: (
+            <Main posts={postsState.posts} updatePost={postsState.updatePost} />
+          )
+        },
         {
           path: "post/create",
           element: <PostCreate addPost={postsState.addPost} />
         }, // 게시글 생성
-        { path: "post/:id", element: <PostDetail posts={postsState.posts} /> } // 게시글 상세
+        {
+          path: "post/:id",
+          element: (
+            <PostDetail
+              posts={postsState.posts}
+              updatePost={postsState.updatePost}
+              deletePost={postsState.deletePost}
+            />
+          )
+        } // 게시글 상세
       ]
     },
     { path: "login", element: <Login /> },
