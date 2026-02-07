@@ -23,53 +23,52 @@ export default function Main({ posts }) {
 
   return (
     <>
-      <section className="w-full max-w-[1400px] mx-auto grid md:grid-cols-2 grid-cols-1 gap-4 flex-1">
-        {pagedPosts.map((post) => {
-          return (
-            <div
-              key={post.id}
-              onClick={() => navigate(`/post/${post.id}`)}
-              className=" ring ring-white/10 rounded-2xl bg-white/4 backdrop-blur-xl p-6 shadow-[0_8px_20px_rgba(0,0,0,0.3)]
-                 h-[310px] flex flex-col gap-4 transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] hover:scale-[0.98] cursor-pointer"
-            >
-              {/* 작성된 게시글 */}
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl">{post.title}</h2>
-                <span>{dayjs(post.date).format("YYYY-MM-DD HH:mm")}</span>
-              </div>
-
-              <div className="flex flex-1 gap-6">
+      <section className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1">
+        {pagedPosts.length === 0 ? (
+          <div className="col-span-full flex items-center justify-center h-[300px] text-white/50 text-lg">
+            게시글이 없습니다. 새로운 글을 작성해주세요.
+          </div>
+        ) : (
+          pagedPosts.map((post) => {
+            return (
+              <div
+                key={post.id}
+                onClick={() => navigate(`/post/${post.id}`)}
+                className="rounded-2xl overflow-hidden bg-white/5 backdrop-blur-xl ring ring-white/10 shadow-[0_8px_20px_rgba(0,0,0,0.35)] transition-all duration-300 hover:shadow-[0_20px_60px_rgba(0,0,0,0.6)] cursor-pointer flex flex-col h-[420px]"
+              >
                 {post.images && post.images.length > 0 && (
-                  <div className="relative w-32 h-full">
+                  <div className="relative w-full h-[220px] overflow-hidden shrink-0">
                     <img
                       src={post.images[0]}
                       alt=""
-                      className="w-full h-full shrink-0 object-cover rounded-lg"
+                      className="w-full h-full object-cover"
                     />
-                    {post.images.length > 1 && (
-                      <div
-                        className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg 
-                      text-white text-lg font-semibold"
-                      >
-                        +{post.images.length - 1}
-                      </div>
-                    )}
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
                   </div>
                 )}
 
-                <p className="text-lg text-white/70 line-clamp-6 flex-1">
-                  {post.contents}
-                </p>
+                <div className="p-5 flex flex-col gap-3 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold leading-snug line-clamp-2">
+                      {post.title}
+                    </h2>
+
+                    <span className="text-xs text-white/30 ml-auto">
+                      {dayjs(post.date).format("YYYY-MM-DD HH:mm")}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-white/70 line-clamp-6 flex-1">
+                    {post.contents}
+                  </p>
+                </div>
               </div>
-              <div className="w-full flex items-center justify-end">
-                <button className="bg-red-700 px-3 py-1.5 rounded-lg">
-                  삭제
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </section>
+
+      {/* 페이지네이션 */}
       <div className="flex justify-center items-center gap-4 mt-10">
         {Array.from({ length: totalPages }).map((_, idx) => {
           const pageNumber = idx + 1;
