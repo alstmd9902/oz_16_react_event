@@ -1,6 +1,13 @@
+import dayjs from "dayjs";
+import "dayjs/locale/ko"; // 한국어 가져오기
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link } from "react-router-dom";
+//0분전, 1달전, 1년전 이렇게 상대 시간을 표현하는 플러그인
+import relativeTime from "dayjs/plugin/relativeTime";
+import usePosts from "../../hooks/usePosts";
+dayjs.extend(relativeTime); // 플러그인 등록
+dayjs.locale("ko"); // 언어 등록
 
 /**
  * 게시글 작성 페이지
@@ -14,6 +21,30 @@ export default function PostCreate() {
   const [images, setImages] = useState([]); // [{ file, preview }]
   const [title, setTitle] = useState(""); // 게시글 제목
   const [content, setContent] = useState(""); // 게시글 내용
+  const { addPost } = usePosts();
+  // 제목 또는 내용이 하나라도 없다면 버튼 비활성화 해야함 false ,true 로 비교
+  const isValid = Boolean(title.trim() && content.trim());
+
+  /*
+   * 작성 완료 버튼 클릭 시
+   * - 현재 입력된 이미지 / 제목 / 내용을 기반으로 data 객체를 생성한다
+   * - 생성된 data 객체를 posts 배열(state)에 추가한다
+   * - 작성된 값 전부 초기 상태로 돌린다
+   */
+  const handleClick = () => {
+    const data = {
+      id: Date.now(),
+      image: images,
+      title: title,
+      contents: content,
+      date: dayjs().format("YYYY MM DD HH:mm:ss")
+    };
+    addPost(data);
+    setTitle("");
+    setContent("");
+    setImages([]);
+  };
+  // console.log(posts);
 
   // 이미지 드롭/선택 시 실행
   const onDrop = (acceptedFiles) => {
@@ -39,7 +70,7 @@ export default function PostCreate() {
     });
   };
 
-  // react-dropzone 단계에서 이미 컷된 경우 안내용
+  // react-dropzone 단계에서 이미 컷된 경우 내용
   const onDropRejected = () => {
     alert(
       `이미지는 최대 ${MAX_IMAGES}장까지 첨부할 수 있어요. 다시 선택해주세요`
@@ -53,7 +84,8 @@ export default function PostCreate() {
     maxFiles: MAX_IMAGES, // 1차 개수 제한
     accept: {
       "image/*": [".jpeg", ".jpg", ".png"] // 이미지 파일만 허용
-    }
+    },
+    disabled: images.length >= MAX_IMAGES
   });
 
   // 이미지 하나 삭제
@@ -85,18 +117,29 @@ export default function PostCreate() {
 
         {/* 이미지 업로드 영역 */}
         <div
-          {...getRootProps({
-            onClick: (e) => e.stopPropagation() // 썸네일 클릭 시 업로드 방지
-          })}
+          {...getRootProps({ disabled: images.length >= MAX_IMAGES })}
           className="cursor-pointer rounded-xl border-2 border-dashed border-emerald-400/30 p-7 text-center transition hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(52,211,153,0.35)]"
         >
-          <input {...getInputProps()} /> {/* 실제 file input */}
+          <input {...getInputProps()} className="w-full" />
+          {/* 실제 file input */}
           {images.length > 0 ? (
-            <div className="grid grid-cols-5 gap-3">
+            <div className="flex gap-3 overflow-x-auto overflow-y-hidden">
+              {images.length < MAX_IMAGES && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    open(); // + 버튼으로만 파일 선택
+                  }}
+                  className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-emerald-400/40 text-emerald-400 text-2xl transition hover:border-emerald-400 hover:bg-emerald-400/10 shrink-0 w-36 h-[150px]"
+                >
+                  +
+                </button>
+              )}
               {images.map((img, idx) => (
                 <div
                   key={img.preview}
-                  className="relative aspect-square overflow-hidden rounded-lg border border-white/10 group"
+                  className="relative group shrink-0 w-[163px] h-[150px]"
                 >
                   <img
                     src={img.preview}
@@ -117,20 +160,6 @@ export default function PostCreate() {
                   </button>
                 </div>
               ))}
-
-              {/* 5장 미만일 때만 추가 버튼 노출 */}
-              {images.length < MAX_IMAGES && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    open(); // + 버튼으로만 파일 선택
-                  }}
-                  className="flex aspect-square items-center justify-center rounded-lg border-2 border-dashed border-emerald-400/40 text-emerald-400 text-2xl transition hover:border-emerald-400 hover:bg-emerald-400/10"
-                >
-                  +
-                </button>
-              )}
             </div>
           ) : isDragActive ? (
             // 드래그 중 상태
@@ -140,18 +169,15 @@ export default function PostCreate() {
             <div>
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
+                  if (images.length >= MAX_IMAGES) return; // 이미지 5개 초과시 클릭 막음
                   open();
                 }}
                 className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400 text-emerald-400 text-xl"
               >
                 +
               </button>
-              <strong>
-                이미지를 드래그하거나 클릭해 첨부하세요 ({images.length}/
-                {MAX_IMAGES})
-              </strong>
+              <strong>이미지를 드래그하거나 클릭해 첨부하세요(최대 5장)</strong>
             </div>
           )}
         </div>
@@ -161,7 +187,7 @@ export default function PostCreate() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="제목을 입력하세요"
-          className="w-full rounded-xl border border-white/10 bg-transparent px-4 py-3 text-md focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30"
+          className={`w-full rounded-xl border border-white/10 bg-transparent px-4 py-3 text-md focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30`}
         />
 
         {/* 내용 입력 */}
@@ -182,8 +208,14 @@ export default function PostCreate() {
           </Link>
 
           <button
-            type="button"
-            className="flex-1 rounded-xl bg-emerald-600 py-3 text-md font-medium shadow-[0_0_20px_rgba(52,211,153,0.2)] transition hover:brightness-110"
+            onClick={handleClick}
+            disabled={!isValid}
+            className={`flex-1 rounded-xl py-3 text-md font-medium transition
+                      ${
+                        isValid
+                          ? "bg-emerald-600 hover:brightness-110"
+                          : "bg-white/10 cursor-not-allowed opacity-50"
+                      }`}
           >
             작성 완료
           </button>
