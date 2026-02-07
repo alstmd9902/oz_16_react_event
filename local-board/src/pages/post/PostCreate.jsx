@@ -1,13 +1,11 @@
-import dayjs from "dayjs";
-import "dayjs/locale/ko"; // 한국어 가져오기
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link } from "react-router-dom";
-//0분전, 1달전, 1년전 이렇게 상대 시간을 표현하는 플러그인
-import relativeTime from "dayjs/plugin/relativeTime";
-import usePosts from "../../hooks/usePosts";
-dayjs.extend(relativeTime); // 플러그인 등록
-dayjs.locale("ko"); // 언어 등록
+//import dayjs from "dayjs";
+// //0분전, 1달전, 1년전 이렇게 상대 시간을 표현하는 플러그인
+// import relativeTime from "dayjs/plugin/relativeTime";
+// dayjs.extend(relativeTime); // 플러그인 등록
+// dayjs.locale("ko"); // 언어 등록
 
 /**
  * 게시글 작성 페이지
@@ -15,36 +13,26 @@ dayjs.locale("ko"); // 언어 등록
  * - 이미지 최대 5장 제한
  * - 초과 시 경고 + 업로드 차단
  */
-export default function PostCreate() {
+export default function PostCreate({ addPost }) {
   const MAX_IMAGES = 5; // 이미지 최대 개수 제한
 
   const [images, setImages] = useState([]); // [{ file, preview }]
   const [title, setTitle] = useState(""); // 게시글 제목
   const [content, setContent] = useState(""); // 게시글 내용
-  const { addPost } = usePosts();
+
   // 제목 또는 내용이 하나라도 없다면 버튼 비활성화 해야함 false ,true 로 비교
   const isValid = Boolean(title.trim() && content.trim());
 
-  /*
-   * 작성 완료 버튼 클릭 시
-   * - 현재 입력된 이미지 / 제목 / 내용을 기반으로 data 객체를 생성한다
-   * - 생성된 data 객체를 posts 배열(state)에 추가한다
-   * - 작성된 값 전부 초기 상태로 돌린다
-   */
   const handleClick = () => {
-    const data = {
-      id: Date.now(),
-      image: images,
-      title: title,
-      contents: content,
-      date: dayjs().format("YYYY MM DD HH:mm:ss")
-    };
-    addPost(data);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("contents", content);
+    images.forEach(({ file }) => formData.append("images", file));
+    addPost(formData);
     setTitle("");
     setContent("");
     setImages([]);
   };
-  // console.log(posts);
 
   // 이미지 드롭/선택 시 실행
   const onDrop = (acceptedFiles) => {
