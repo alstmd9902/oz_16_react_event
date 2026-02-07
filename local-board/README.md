@@ -1,16 +1,35 @@
-# React + Vite
+# Local Board (게시판 프로젝트)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+이미지 업로드를 포함한 게시글 CRUD 기능을 구현한 로컬 게시판 웹 애플리케이션입니다.  
+프론트엔드와 Express 서버를 분리하여 데이터 흐름과 책임을 설계했습니다.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✅ 구현 기능
 
-## React Compiler
+- 게시글 **목록 / 상세 / 작성 / 수정 / 삭제(CRUD)** 기능
+- 게시글 작성 시 **이미지 다중 업로드 및 미리보기** 지원
+- 이미지 업로드 로직을 **커스텀 훅으로 분리하여 재사용**
+- 게시글 삭제 시 **업로드된 이미지 파일도 서버에서 함께 삭제**
+- `posts.json` 기반 게시글 데이터 영구 저장
+- 서버 응답 기준으로 프론트 상태 동기화
+- Router에서 커스텀 훅 상태를 생성 후 **자식 컴포넌트에 props로 전달**
+- 게시글이 없을 경우 **안내 메시지 표시**
+- 게시글 상세 페이지 **레이아웃 개선 및 수정·삭제 로직 구현**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠 기술 스택
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Frontend: React, Vite, Tailwind CSS
+- Backend: Node.js, Express
+- File Upload: Multer
+- Data Storage: JSON 파일(`posts.json`)
+
+---
+
+## 📌 프로젝트 특징
+
+- 파일 시스템 기반 이미지 관리(`/uploads`)
+- 기능 단위 커밋으로 작업 이력 관리
+- 확장(DB, 스토리지 분리)을 고려한 구조 설계
